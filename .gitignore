@@ -1,0 +1,59 @@
+### Eclipse ###
+.metadata
+bin/
+tmp/
+local.properties
+.settings/
+.loadpath
+.recommenders
+.project
+.classpath
+
+### Intellij ###
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+### NetBeans ###
+**/nbproject/private/
+**/nbproject/Makefile-*.mk
+**/nbproject/Package-*.bash
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### Java ###
+*.class
+*.log
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Gradle ###
+.gradle
+build/
+gradle
+gradlew
+gradlew.bat
+settings.gradle
+gradle-app.setting
+.gradletasknamecache
+**/build/
+
+### Files ###
+target/
+
+# End
+
+## TM4J ###
+tm4j_result.json
+output_result.zip
+.DS_Store
