@@ -16,12 +16,10 @@ public class CitiesTest extends BaseTest {
 
     @Test
     void shouldFindCityByValidId() {
-        int guildfordId = citiesClient.getCityByName("Guildford").jsonPath().getInt("data.id[0]");
-
-        citiesClient.getCityById(guildfordId)
+        citiesClient.getCityById(cityTestId)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
-                .body("data.id", is(guildfordId))
+                .body("data.id", is(cityTestId))
                 .body("data.name", is("Guildford"))
                 .body("data.country", is("United Kingdom"))
                 .body("data.region", is("England"));
@@ -44,10 +42,10 @@ public class CitiesTest extends BaseTest {
     }
 
     @Test
-    void shouldFindCityByExistingName() {
-        String name = "Guildford";
+    void shouldFindCityByExistingNamePrefix() {
+        String namePrefix = "Guildf";
 
-        citiesClient.getCityByName(name)
+        citiesClient.getCityByNamePrefix(namePrefix)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .body("data.name", contains("Guildford"))
@@ -57,19 +55,54 @@ public class CitiesTest extends BaseTest {
     }
 
     @Test
-    void shouldFindCitiesNearbyGuildford() {
-        int guildfordId = citiesClient.getCityByName("Guildford").jsonPath().getInt("data.id[0]");
-
+    void shouldFindCitiesNearbyGuildfordWithinTenMilesRadius() {
         List<String> citiesExpected = Arrays.asList("Godalming", "Woking", "Waverley");
 
         List<CityDTO> citiesResult =
                 citiesClient
-                        .getNearbyCities(guildfordId, 10)
+                        .getNearbyCities(cityTestId, 10)
                         .then()
                         .body("metadata.totalCount", is(citiesExpected.size()))
                         .extract().jsonPath()
                         .getList("data", CityDTO.class);
 
         assertTrue(citiesResult.stream().allMatch(city -> citiesExpected.contains(city.getName())));
+    }
+
+    @Test
+    void shouldReturnNotFoundForCityWithInvalidId() {
+        int invalidId = 0;
+
+        citiesClient.getCityById(invalidId)
+                .then()
+                .statusCode(HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test
+    void shouldNotFindAnyCityWithPopulationBiggerThanOneBillion() {
+        long minPopulation = 1000000000;
+
+        citiesClient.getCitiesByMinPopulation(minPopulation)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("metadata.totalCount", is(0));
+    }
+
+    @Test
+    void shouldNotFindAnyCityWithNonexistentNamePrefix() {
+        String namePrefix = "West Pineapple";
+
+        citiesClient.getCityByNamePrefix(namePrefix)
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("metadata.totalCount", is(0));
+    }
+
+    @Test
+    void shouldReturnErrorWhenNearbyCitiesRadiusIsZero() {
+        citiesClient.getNearbyCities(cityTestId, 0)
+                .then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("errors.code[0]", is("PARAM_INVALID"));
     }
 }

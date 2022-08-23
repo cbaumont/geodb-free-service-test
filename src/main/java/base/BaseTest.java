@@ -5,10 +5,12 @@ import org.testng.annotations.BeforeClass;
 
 public abstract class BaseTest {
 
-    protected static CitiesClient citiesClient;
+    protected CitiesClient citiesClient;
+    protected int cityTestId;
 
     @BeforeClass
     public void setUp() {
         citiesClient = new CitiesClient();
+        cityTestId = citiesClient.getCityByNamePrefix("Guildford").jsonPath().getInt("data.id[0]");
     }
 }

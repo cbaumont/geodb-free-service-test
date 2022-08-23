@@ -25,10 +25,10 @@ public class CitiesClient extends DefaultClient {
                 .get();
     }
 
-    public Response getCityByName(String name) {
+    public Response getCityByNamePrefix(String namePrefix) {
         return given()
                 .spec(serviceSpecification)
-                .queryParam("namePrefix", name)
+                .queryParam("namePrefix", namePrefix)
                 .get();
     }
 
